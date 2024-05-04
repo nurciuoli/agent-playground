@@ -168,41 +168,29 @@ def go_through_tool_actions(tool_calls, worker, run_id, thread_id, print_flag):
     tool_output_list = []
     for tool_call in tool_calls:
         function_name = json.loads(tool_call.json())['function']['name']
-        if function_name == 'get_help':
-            if print_flag:
-                print('===============================================================')
-                print('                         GETTING HELP')
-                print('===============================================================')
+        print('...')
+        print(function_name)
+        print('...')
+        #print(json.loads(json.loads(tool_call.json())['function']['arguments']))
+        if function_name == 'plan_and_execute':
             tasks =json.loads(json.loads(tool_call.json())['function']['arguments'])['tasks']
-            help_resp = get_help(worker, tasks)
+            #help_resp = get_help(worker, tasks)
             for task in tasks:
                 print(task['instructions'])
-            tool_output_list.append({"tool_call_id": tool_call.id,"output": str(help_resp)})
-        elif function_name == 'file_upload':
-            if print_flag:
-                print('===============================================================')
-                print('                          FILE MANAGER')
-                print('===============================================================')
-            files =json.loads(json.loads(tool_call.json())['function']['arguments'])['files']
-            file_dict = file_manager(files)
-            file_ids = list(file_dict.keys())
-            client.beta.assistants.update(assistant_id=worker.assistant.id, file_ids=file_ids)
-            for file in list(file_dict.values()):
-                print('-' + file)
-            tool_output_list.append({"tool_call_id": tool_call.id,"output": 'The files have been uploaded and you can access them'})
-        elif function_name == 'post_plan':
-            tool_output_string = ''
-            if print_flag:
-                print('===============================================================')
-                print('                               PLAN')
-                print('===============================================================')
-            tasks = json.loads(json.loads(tool_call.json())['function']['arguments'])['tasks']
-            for i, task in enumerate(tasks):
-                tool_output_string += str(i + 1) + ':'
-                tool_output_string += task['details']
-                tool_output_string += ' \n'
-            print(tool_output_string)
-            tool_output_list.append({"tool_call_id": tool_call.id,"output": tool_output_string})
+                print(task['output_file'])
+            tool_output_list.append({"tool_call_id": tool_call.id,"output": "it is done"})
+
+        elif function_name=='get_review':
+            files = json.loads(json.loads(tool_call.json())['function']['arguments'])['files']
+            for file in files:
+                print(file)
+            tool_output_list.append({"tool_call_id": tool_call.id,"output": "looks good"})
+
+        elif function_name=='get_second_opinion':
+            args = json.loads(json.loads(tool_call.json())['function']['arguments'])
+            print(args)
+            tool_output_list.append({"tool_call_id": tool_call.id,"output": "yep, rip it"})
+            
     # Submit the collected tool outputs and return the run object
     run = client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tool_output_list)
     return run

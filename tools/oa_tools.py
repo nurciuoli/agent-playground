@@ -1,53 +1,26 @@
-#worker util jsons
-
-post_plan_json = {
-    "name": "post_plan",
-    "description": "Use this to post your plan for everyone to see",
+#Agent util jsons
+plan_and_execute_json = {
+    "name": "plan_and_execute",
+    "description": "Come up with an organized and thoughtful plan of how to break up the user request into individual actionable pieces",
     "parameters": {
         "type": "object",
         "properties": {
             "objective": {"type": "string"},
             "tasks": {
                 "type": "array",
-                "description": "Each individual task needed to accomplish the objective",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "details": {"type": "string"},
-                        "choices": {"type": "array", "items": {"type": "string"}},
-                    },
-                    "required": ["details"],
-                },
-            },
-        },
-        "required": ["objective", "tasks"],
-    },
-}
-
-
-
-get_help_json = {
-    "name": "get_help",
-    "description": "Use this to delegate a single or multiple tasks to a team of workers. Break down the objective into as many individual steps as it makes sense",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "objective": {"type": "string"},
-            "tasks": {
-                "type": "array",
-                "description": "An array of individual tasks to accomplish the overall objective, and an assignment",
+                "description": "An array of individual tasks that workers can execute asynchronously",
                 "items": {
                     "type": "object",
                     "properties": {
                         "instructions": {"type": "string",
                                          "description":"a detailed prompt describing exactly what the worker should do and any context needed"},
-                        "worker_type": {
+                        "output_file": {
                             "type": "string",
-                            "enum": ["SOFTWAREENGINEER", "WRITER"],
+                            "description": "full filepath with extension, such as code.py",
                         },
                         "choices": {"type": "array", "items": {"type": "string"}},
                     },
-                    "required": ["instructions","worker_type"],
+                    "required": ["instructions","output_file"],
                 },
             },
         },
@@ -56,22 +29,22 @@ get_help_json = {
 }
 
 
-file_manager_json = {
-    "name": "file_upload",
-    "description": "Use this to archive multiple files at once to the directory",
+get_review_json = {
+    "name": "get_review",
+    "description": "Use to get a peer review on your final work",
     "parameters": {
         "type": "object",
         "properties": {
             "files": {
                 "type": "array",
-                "description": "Standalone files for use in the project",
+                "description": "Files to have reviewed",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "file_name_with_extension": {"type": "string",
+                        "file_name_with_ext": {"type": "string",
                                       "description":"a name and filepath for the file. EXAMPLE: main.py, poem1.txt, templates/index.html"},
                         "content": {"type": "string",
-                                    "description":"content to archive, such as code, text, ect"},
+                                    "description":"a summary of what the file contents should contain"},
                                     "choices": {"type": "array", "items": {"type": "string"}},
                     },
                     "required": ["file_name_with_extension","content"],
@@ -79,5 +52,21 @@ file_manager_json = {
             },
         },
         "required": ["files"],
+    },
+}
+
+
+get_second_opinion_json = {
+    "name": "get_second_opinion",
+    "description": "Use this to ask a peer a question or get their opinion",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "question": {
+                "type": "string",
+                "description": "question to get advice or help get answered",
+            },
+        },
+        "required": ["question"],
     },
 }
