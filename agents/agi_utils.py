@@ -11,7 +11,7 @@ from io import BytesIO
 from agents.myLlama import generate
 from agents.myLlama import Agent as LAgent
 from agents.myGemini import Agent as GAgent
-
+from agents.myClaude import Agent as CAgent
 # Initialize OpenAI client using the API key from .env file
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
@@ -33,7 +33,7 @@ def get_help(task):
         help_response = agi.chat(task['instructions'])
         #print(help_response)
         full_filepath = 'sandbox/' + task['output_file']
-        with open(full_filepath, "w") as file:  # Use "w" for writing only
+        with open(full_filepath, "a") as file:  # Use "w" for writing only
             file.write(help_response)  # Write the string directly
     except Exception as e:
         print(e)
@@ -44,7 +44,16 @@ def get_review(files):
         return response
     except Exception as e:
         print(e)
-    
+
+def get_second_op(question):
+    try:
+        agi = CAgent()
+        response = agi.chat(question)
+        return response[-1].text
+    except Exception as e:
+        print(e)
+
+
 
 # Function to process run steps and handle different types of outputs
 # Args:
@@ -125,9 +134,9 @@ def go_through_tool_actions(tool_calls, run_id, thread_id):
             tool_output_list.append({"tool_call_id": tool_call.id,"output": response})
 
         elif function_name=='get_second_opinion':
-            args = json.loads(json.loads(tool_call.json())['function']['arguments'])
-            print(args)
-            tool_output_list.append({"tool_call_id": tool_call.id,"output": "yep, rip it"})
+            question = json.loads(json.loads(tool_call.json())['function']['arguments'])['question']
+            response = get_second_op(question)
+            tool_output_list.append({"tool_call_id": tool_call.id,"output": response})
             
     # Submit the collected tool outputs and return the run object
     run = client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tool_output_list)

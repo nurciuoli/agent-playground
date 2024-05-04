@@ -64,7 +64,7 @@ class Agent:
 
         self.response=response
         self.print_response_and_append_messages(response,json_mode)
-        #print('...')
+        return response
 
 
     #print messages and append
