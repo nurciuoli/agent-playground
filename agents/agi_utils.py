@@ -29,8 +29,10 @@ def encode_image(image_path):
 # tasks - A list of tasks to get help with
 def get_help(task):
     try:
+        print('TASK:'+task['instructions'])
         agi = LAgent('Do as you are instructed, if writing code ONLY include code syntax do not mix file types')
         help_response = agi.chat(task['instructions'])
+        print('RESPONSE:'+help_response)
         #print(help_response)
         full_filepath = 'sandbox/' + task['output_file']
         with open(full_filepath, "a") as file:  # Use "w" for writing only
@@ -40,15 +42,21 @@ def get_help(task):
 def get_review(files):
     try:
         agi = GAgent()
-        response = agi.review_content(files)
+        response = agi.chat(files)
+        try:
+            print("REVIEW:"+response.text)
+        except:
+            pass
         return response
     except Exception as e:
         print(e)
 
 def get_second_op(question):
     try:
-        agi = CAgent()
+        agi = CAgent("You are a helpful assistant, provide concise insight")
+        print("QUESTION:"+question)
         response = agi.chat(question)
+        print("SECOND OP:"+response[-1].text)
         return response[-1].text
     except Exception as e:
         print(e)
@@ -129,7 +137,7 @@ def go_through_tool_actions(tool_calls, run_id, thread_id):
                 with open(full_path, "r") as file:
                     content = file.read()
                     full_content = "INSTRUCTIONS: You are a helpful peer reviewer, look through the following comments and files and offer concise feedback DO NOT provide examples"+filep['content']+content
-                    contents.append({filep['file_name_with_ext']:full_content})
+                    contents.append({"file_name":filep['file_name_with_ext'],"contents":full_content})
             response =get_review(str(contents))
             tool_output_list.append({"tool_call_id": tool_call.id,"output": response})
 

@@ -63,7 +63,7 @@ class Agent:
         response = send_messsage(self.messages,self.system_prompt,self.model,self.max_tokens,self.temperature)
 
         self.response=response
-        self.print_response_and_append_messages(response,json_mode)
+        #self.print_response_and_append_messages(response,json_mode)
         return response
 
 

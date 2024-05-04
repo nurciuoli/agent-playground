@@ -1,4 +1,6 @@
 import google.generativeai as genai
+
+
 # agent class framework
 class Agent:
     def __init__(self,model='gemini-1.0-pro-latest',tools=None):
@@ -27,5 +29,5 @@ class Agent:
             self.messages=[]
             self.thread=self.model.start_chat(history=self.messages,enable_automatic_function_calling=auto_funct_call)
         self.response=self.thread.send_message([user_msg])
-        print(self.response.text)
+        return self.response.text
     
