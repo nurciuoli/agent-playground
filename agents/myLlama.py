@@ -1,7 +1,7 @@
 import ollama as o
 import base64
 #chat func
-def chat(user_msg,stream=True):
+def chat(user_msg):
     messages = [
     {
         'role': 'user',
@@ -9,11 +9,8 @@ def chat(user_msg,stream=True):
     },
     ]
 
-    for part in o.chat('llama3', messages=messages, stream=stream):
-        print(part['message']['content'], end='', flush=True)
-
-    # end with a newline
-    print()
+    response=o.chat('llama3', messages=messages, stream=False)
+    return response
 
 #generate func
 def generate(prompt,format=None):
@@ -28,7 +25,7 @@ def generate_w_images(prompt,images,stream=True):
 
 # agent class framework
 class Agent:
-    def __init__(self,system_prompt = 'Do as you are instructed, if writing code ONLY include code syntax do not mix file types'):
+    def __init__(self,system_prompt = 'You are a helpful chat based assistant'):
         self.system_prompt = system_prompt
         self.messages=[
     {
@@ -37,11 +34,11 @@ class Agent:
     },
     ]
     #chat with agent and continue conversation
-    def chat(self,user_msg,stream=True):
+    def chat(self,user_msg):
         self.messages.append(
         {
             'role': 'user',
             'content': user_msg,
         })
         response=o.chat('llama3', messages=self.messages, stream=False)
-        return response
+        return response['message']['content']
