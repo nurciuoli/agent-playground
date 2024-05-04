@@ -16,13 +16,9 @@ def chat(user_msg,stream=True):
     print()
 
 #generate func
-def generate(prompt,stream=True,format=None):
-    if format is None:
-        for part in o.generate('llama3', prompt, stream=stream):
-            print(part['response'], end='', flush=True)
-    else:
-        response=o.generate('llama3', prompt, stream=stream,format=format)
-        print(response['response'])
+def generate(prompt,format=None):
+    response = o.generate('llama3', prompt, stream=False)
+    return response['response']
 
 #generate with image func
 def generate_w_images(prompt,images,stream=True):
@@ -32,7 +28,7 @@ def generate_w_images(prompt,images,stream=True):
 
 # agent class framework
 class Agent:
-    def __init__(self,system_prompt = 'You are a helpful chat based assistant'):
+    def __init__(self,system_prompt = 'Do as you are instructed, if writing code ONLY include code syntax do not mix file types'):
         self.system_prompt = system_prompt
         self.messages=[
     {
@@ -47,16 +43,5 @@ class Agent:
             'role': 'user',
             'content': user_msg,
         })
-        msg_temp=''
-        for part in o.chat('llama3', messages=self.messages, stream=stream):
-            print(part['message']['content'], end='', flush=True)
-            msg_temp+=part['message']['content']
-
-        # end with a newline
-        print()
-
-        self.messages.append(
-            {
-            'role': 'assistant',
-            'content': msg_temp,
-        })
+        response=o.chat('llama3', messages=self.messages, stream=False)
+        return response

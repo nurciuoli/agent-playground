@@ -44,7 +44,7 @@ get_review_json = {
                         "file_name_with_ext": {"type": "string",
                                       "description":"a name and filepath for the file. EXAMPLE: main.py, poem1.txt, templates/index.html"},
                         "content": {"type": "string",
-                                    "description":"a summary of what the file contents should contain"},
+                                    "description":"a summary of what you want reviewed in the file"},
                                     "choices": {"type": "array", "items": {"type": "string"}},
                     },
                     "required": ["file_name_with_extension","content"],

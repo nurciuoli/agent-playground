@@ -16,6 +16,11 @@ class Agent:
     def generate(self,user_msg):
         self.response = self.model.generate_content(user_msg)
         print(self.response.text)
+        return self.response.text
+
+    def review_content(self,content):
+        self.response = self.model.generate_content(content)
+        return self.response.text
 
     def chat(self,user_msg,auto_funct_call=False):
         if self.messages is None:
