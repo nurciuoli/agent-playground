@@ -30,13 +30,14 @@ def encode_image(image_path):
 def get_help(task):
     try:
         print('TASK:'+task['instructions'])
-        agi = LAgent('Do as you are instructed, if writing code ONLY include code syntax do not mix file types')
-        help_response = agi.chat(task['instructions'])
-        print('RESPONSE:'+help_response)
+        full_prompt = task['instructions'] + "you are a smaller piece within a larger project. YOU MUST use the following format to contribute to the project {'contribution':'print(example_variable)'}"
+        help_response = generate(full_prompt,format='json')
+        content = json.loads(help_response,strict=False)['contribution']
+        print('RESPONSE:'+content)
         #print(help_response)
         full_filepath = 'sandbox/' + task['output_file']
         with open(full_filepath, "a") as file:  # Use "w" for writing only
-            file.write(help_response)  # Write the string directly
+            file.write(content)  # Write the string directly
     except Exception as e:
         print(e)
 def get_review(files):
@@ -60,6 +61,7 @@ def get_second_op(question):
         return response[-1].text
     except Exception as e:
         print(e)
+
 
 
 
@@ -121,7 +123,7 @@ def go_through_tool_actions(tool_calls, run_id, thread_id):
         print(function_name)
         print('...')
         #print(json.loads(json.loads(tool_call.json())['function']['arguments']))
-        if function_name == 'plan_and_execute':
+        if function_name == 'execute_plan':
             tasks =json.loads(json.loads(tool_call.json())['function']['arguments'])['tasks']
             for task in tasks:
                 print(task['instructions'])
@@ -145,6 +147,11 @@ def go_through_tool_actions(tool_calls, run_id, thread_id):
             question = json.loads(json.loads(tool_call.json())['function']['arguments'])['question']
             response = get_second_op(question)
             tool_output_list.append({"tool_call_id": tool_call.id,"output": response})
+
+        elif function_name=='get_revisions':
+            revisions = json.loads(json.loads(tool_call.json())['function']['arguments'])['revisions']
+            response = get_revisions(revisions)
+            tool_output_list.append({"tool_call_id": tool_call.id,"output": "revisions have been completed"})
             
     # Submit the collected tool outputs and return the run object
     run = client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tool_output_list)

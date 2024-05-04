@@ -1,6 +1,6 @@
 #Agent util jsons
-plan_and_execute_json = {
-    "name": "plan_and_execute",
+execute_plan_json = {
+    "name": "execute_plan",
     "description": "Come up with an organized and thoughtful plan of how to break up the user request into individual actionable pieces",
     "parameters": {
         "type": "object",
@@ -37,7 +37,7 @@ get_review_json = {
         "properties": {
             "files": {
                 "type": "array",
-                "description": "Files to have reviewed",
+                "description": "Files to have reviewed and detailed background on the question you are asking",
                 "items": {
                     "type": "object",
                     "properties": {
@@ -70,3 +70,4 @@ get_second_opinion_json = {
         "required": ["question"],
     },
 }
+

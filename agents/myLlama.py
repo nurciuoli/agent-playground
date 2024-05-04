@@ -14,7 +14,7 @@ def chat(user_msg):
 
 #generate func
 def generate(prompt,format=None):
-    response = o.generate('llama3', prompt, stream=False)
+    response = o.generate('llama3', prompt, stream=False,format=format)
     return response['response']
 
 #generate with image func
